@@ -130,7 +130,8 @@ fi
 
 if [ -z "${FUZZER_CONFIG_FILE}" ]; then
     FUZZER_CONFIG_FILE=${TEST_DIR}/conf.yaml
-elif [ ! -f "${FUZZER_CONFIG_FILE}" ]; then
+fi
+if [ ! -f "${FUZZER_CONFIG_FILE}" ]; then
     echo "specified fuzzer config file doesn't exist: ${FUZZER_CONFIG_FILE}"
     exit 1
 fi
@@ -153,7 +154,6 @@ fi
 if [ -z "${ESP_PROJ_DIR}" ]; then
     ESP_PROJ_DIR="${TEST_DIR}/esp"
 fi
-
 if [ ! -d "${ESP_PROJ_DIR}" ]; then
     echo "Specified project dir doesn't exist ${ESP_PROJ_DIR}"
     exit 1
