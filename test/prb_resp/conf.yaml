@@ -1,0 +1,16 @@
+---
+fuzzer_type: "prb_resp"
+interface: wlp7s0f4u2u2
+random_seed: 420
+src_mac: "8c:dc:02:d3:28:1f"  # zte router
+test_device_mac: "3c:71:bf:a6:e6:d0" # ESP
+
+monitor:
+  frame_history_len: 10
+  dump_file: "/home/adam/dev/dp/test_runner/dump"
+  type: grpc
+  server_address: 0.0.0.0:500051
+  
+controller:
+  wait_duration_ms: 2000
+  packet_resend_count: 30
