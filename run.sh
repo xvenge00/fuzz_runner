@@ -54,7 +54,6 @@ fi
 # read getopt’s output this way to handle the quoting right:
 eval set -- "$PARSED"
 
-d=n
 # now enjoy the options in order and nicely split until we see --
 while true; do
     case "$1" in
@@ -159,6 +158,8 @@ if [ ! -d "${ESP_PROJ_DIR}" ]; then
     exit 1
 fi
 
+# TODO check monitor set and monitor env set
+
 
 ################## building and flashing esp app ########################
 
@@ -202,19 +203,11 @@ if [ -n "${MONITOR}" ]; then
         source "${MONITOR_PYTHON_ENV}"
     fi
 
-    monitor() {
-        # shellcheck source=/dev/null
-        source ${MONITOR_PYTHON_ENV}
-
-        # run monitor
-        ${MONITOR}
-    }
-
     # kill monitor when fuzzing ends
     trap 'kill $(jobs -p)' EXIT
 
     # run monitor in background
-    monitor &
+    ${MONITOR} &
 
     if [ -n "${MONITOR_PYTHON_ENV}" ]; then
         deactivate
