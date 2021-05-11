@@ -10,7 +10,7 @@ tear_down: "null"
 fuzz_random: 10
 
 monitor:
-  frame_history_len: 10
+  frame_history_len: 20
   dump_file: "/home/adam/dev/dp/test_runner/dump"
   type: grpc
   server_address: 0.0.0.0:500051
