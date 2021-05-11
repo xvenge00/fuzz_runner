@@ -128,7 +128,7 @@ static void wifi_scan(void)
         .channel = 5,
         .show_hidden = 0,
         .scan_type =  WIFI_SCAN_TYPE_PASSIVE,
-        .scan_time = {.passive = 1000}
+        .scan_time = {.passive = 200}
     };
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
