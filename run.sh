@@ -9,7 +9,7 @@ FLASH_ESP_APP=1
 CURR_DIR=$(pwd)
 # ESP_PROJ_DIR=
 
-
+# getopts inspired by https://stackoverflow.com/a/29754866
 
 OPTIONS=
 LONGOPTS=esp-python-env:,port:,monitor:,monitor-python-env:,fuzzer-config-file:,esp-idf-export,no-flash,--esp-proj-dir,--monitor-out:
