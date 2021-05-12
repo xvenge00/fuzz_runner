@@ -1,61 +1,27 @@
 #!/usr/bin/env bash
 
-# More safety, by turning some bugs into errors.
-# Without `errexit` you don’t need ! and can replace
-# PIPESTATUS with a simple $?, but I don’t do that.
-# set -o errexit -o pipefail -o noclobber -o nounset
-
-# -allow a command to fail with !’s side effect on errexit
-# -use return value from ${PIPESTATUS[0]}, because ! hosed $?
-# ! getopt --test > /dev/null 
-# if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
-#     echo 'I’m sorry, `getopt --test` failed in this environment.'
-#     exit 1
-# fi
-
-# ESP_PYTHON_ENV="/home/adam/esp/esp-idf/venv/bin/activate"
-# PORT="/dev/ttyUSB0"
-# MONITOR="/home/adam/dev/dp/py_esp_monitor/main.py"
-# MONITOR_PYTHON_ENV="/home/adam/dev/dp/py_esp_monitor/venv/bin/activate"
-# FUZZER="/home/adam/dev/dp/cpp/build/src/wi_fuzz"
-# FUZZER_CONFIG_FILE="/home/adam/dev/dp/cpp/conf/wifuzz.yaml"
-# ESP_IDF_EXPORT="/home/adam/esp/esp-idf/export.sh"
-
-# CURR_DIR=$(pwd)
-# ESP_PROJ_DIR="/home/adam/dev/dp/test_runner/test/station"
-
 set -e
 
 PORT="/dev/ttyUSB0"
-# MONITOR=
-# MONITOR_PYTHON_ENV=
-# FUZZER_CONFIG_FILE=
 ESP_IDF_EXPORT="$HOME/esp/esp-idf/export.sh"
 FLASH_ESP_APP=1
 
 CURR_DIR=$(pwd)
 # ESP_PROJ_DIR=
 
-
+# getopts inspired by https://stackoverflow.com/a/29754866
 
 OPTIONS=
-LONGOPTS=esp-python-env:,port:,monitor:,monitor-python-env:,fuzzer-config-file:,esp-idf-export,no-flash,--esp-proj-dir:
+LONGOPTS=esp-python-env:,port:,monitor:,monitor-python-env:,fuzzer-config-file:,esp-idf-export,no-flash,--esp-proj-dir,--monitor-out:
 
-# -regarding ! and PIPESTATUS see above
-# -temporarily store output to be able to check for errors
-# -activate quoting/enhanced mode (e.g. by writing out “--options”)
-# -pass arguments only via   -- "$@"   to separate them correctly
 ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
 if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
-    # e.g. return value is 1
-    #  then getopt has complained about wrong arguments to stdout
     exit 2
 fi
+
 # read getopt’s output this way to handle the quoting right:
 eval set -- "$PARSED"
 
-d=n
-# now enjoy the options in order and nicely split until we see --
 while true; do
     case "$1" in
         --esp-python-env)
@@ -89,6 +55,10 @@ while true; do
         --no-flash)
             FLASH_ESP_APP=0
             shift
+            ;;
+        --monitor-out)
+            MONITOR_OUT="$2"
+            shift 2
             ;;
         --)
             shift
@@ -159,6 +129,13 @@ if [ ! -d "${ESP_PROJ_DIR}" ]; then
     exit 1
 fi
 
+# TODO check monitor set and monitor env set
+
+if [ -z "${MONITOR_OUT}" ]; then
+    echo "Need to specify monitor output file"
+    exit 1
+fi
+
 
 ################## building and flashing esp app ########################
 
@@ -202,19 +179,11 @@ if [ -n "${MONITOR}" ]; then
         source "${MONITOR_PYTHON_ENV}"
     fi
 
-    monitor() {
-        # shellcheck source=/dev/null
-        source ${MONITOR_PYTHON_ENV}
-
-        # run monitor
-        ${MONITOR}
-    }
-
     # kill monitor when fuzzing ends
     trap 'kill $(jobs -p)' EXIT
 
     # run monitor in background
-    monitor &
+    ${MONITOR} "${MONITOR_OUT}" &
 
     if [ -n "${MONITOR_PYTHON_ENV}" ]; then
         deactivate
