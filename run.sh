@@ -3,7 +3,6 @@
 set -e
 
 PORT="/dev/ttyUSB0"
-ESP_IDF_EXPORT="$HOME/esp/esp-idf/export.sh"
 FLASH_ESP_APP=1
 
 CURR_DIR=$(pwd)
@@ -12,7 +11,7 @@ CURR_DIR=$(pwd)
 # getopts inspired by https://stackoverflow.com/a/29754866
 
 OPTIONS=
-LONGOPTS=esp-python-env:,port:,monitor:,monitor-python-env:,fuzzer-config-file:,esp-idf-export,no-flash,--esp-proj-dir,--monitor-out:
+LONGOPTS=esp-python-env:,port:,monitor:,monitor-python-env:,fuzzer-config-file:,esp-idf-export:,no-flash,esp-proj-dir:,monitor-out:
 
 ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
 if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
