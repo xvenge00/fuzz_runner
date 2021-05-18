@@ -12,10 +12,8 @@ fuzz_random: 10
 monitor:
   frame_history_len: 20
   dump_file: "/home/adam/dev/dp/test_runner/dump"
-  # type: grpc
-  # server_address: 0.0.0.0:50051
-  type: passive
-  timeout_s: 5s
+  type: grpc
+  server_address: 0.0.0.0:50051
 
 controller:
   wait_duration_ms: 0
